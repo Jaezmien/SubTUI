@@ -111,7 +111,7 @@ func subsonicPing() error {
 	return nil
 }
 
-func subsonicSearchArtist(query string, page int) {
+func subsonicSearchArtist(query string, page int) ([]Artist, error) {
 	params := map[string]string{
 		"query":        query,
 		"artistCount":  "20",
@@ -124,16 +124,13 @@ func subsonicSearchArtist(query string, page int) {
 
 	data, err := subsonicGET("/search3", params)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		return nil, err
 	}
 
-	for _, artist := range data.Response.SearchResult.Artists {
-		fmt.Printf("Found Artist: %s\n", artist.Name)
-	}
+	return data.Response.SearchResult.Artists, nil
 }
 
-func subsonicSearchAlbum(query string, page int) {
+func subsonicSearchAlbum(query string, page int) ([]Album, error) {
 	params := map[string]string{
 		"query":        query,
 		"artistCount":  "0",
@@ -146,16 +143,13 @@ func subsonicSearchAlbum(query string, page int) {
 
 	data, err := subsonicGET("/search3", params)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		return nil, err
 	}
 
-	for _, album := range data.Response.SearchResult.Albums {
-		fmt.Printf("Found Album: %s\n", album.Title)
-	}
+	return data.Response.SearchResult.Albums, nil
 }
 
-func subsonicSearchSong(query string, page int) {
+func subsonicSearchSong(query string, page int) ([]Song, error) {
 	params := map[string]string{
 		"query":        query,
 		"artistCount":  "0",
@@ -168,13 +162,10 @@ func subsonicSearchSong(query string, page int) {
 
 	data, err := subsonicGET("/search3", params)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		return nil, err
 	}
 
-	for _, song := range data.Response.SearchResult.Songs {
-		fmt.Printf("Found Songs: %s\n", song.ID)
-	}
+	return data.Response.SearchResult.Songs, nil
 }
 
 func subsonicStream(id string) string {
