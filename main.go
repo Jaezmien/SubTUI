@@ -24,4 +24,9 @@ func main() {
 		fmt.Println("Please check your config.yaml and try again.")
 		os.Exit(1)
 	}
+
+	if err := initPlayer(); err != nil {
+		panic(err)
+	}
+	defer shutdownPlayer()
 }

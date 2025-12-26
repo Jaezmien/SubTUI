@@ -74,7 +74,7 @@ func subsonicGET(endpoint string, params map[string]string) (*SubsonicResponse, 
 	v.Set("t", token)
 	v.Set("s", salt)
 	v.Set("v", "1.16.1")
-	v.Set("c", "depth")
+	v.Set("c", "DepthTUI")
 	v.Set("f", "json")
 
 	for key, value := range params {
@@ -173,6 +173,28 @@ func subsonicSearchSong(query string, page int) {
 	}
 
 	for _, song := range data.Response.SearchResult.Songs {
-		fmt.Printf("Found Songs: %s\n", song.Title)
+		fmt.Printf("Found Songs: %s\n", song.ID)
 	}
+}
+
+func subsonicStream(id string) string {
+	baseUrl := "https://" + AppConfig.Domain + "/rest/stream"
+
+	salt := generateSalt()
+	hash := md5.Sum([]byte(AppConfig.Password + salt))
+	token := hex.EncodeToString(hash[:])
+
+	v := url.Values{}
+	v.Set("id", id)
+	v.Set("maxBitRate", "0")
+	v.Set("u", AppConfig.Username)
+	v.Set("t", token)
+	v.Set("s", salt)
+	v.Set("v", "1.16.1")
+	v.Set("c", "DepthTUI")
+	v.Set("f", "json")
+
+	fullUrl := baseUrl + "?" + v.Encode()
+
+	return fullUrl
 }
