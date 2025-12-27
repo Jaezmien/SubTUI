@@ -109,49 +109,60 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "n": // Next song
-			return m, m.playNext()
-
-		case "b": // Previous song
-			return m, m.playPrev()
-
-		case "N": // Play next
-			selectedSong := m.songs[m.cursorMain]
-
-			if len(m.queue) == 0 {
-				m.queue = []api.Song{selectedSong}
-				m.queueIndex = 0
-			} else {
-				insertAt := m.queueIndex + 1
-				tail := append([]api.Song{}, m.queue[insertAt:]...)
-				m.queue = append(m.queue[:insertAt], append([]api.Song{selectedSong}, tail...)...)
+			if m.focus != focusSearch {
+				return m, m.playNext()
 			}
+		case "b": // Previous song
+			if m.focus != focusSearch {
+				return m, m.playPrev()
+			}
+		case "N": // Play next
+			if m.focus == focusMain {
+				selectedSong := m.songs[m.cursorMain]
 
+				if len(m.queue) == 0 {
+					m.queue = []api.Song{selectedSong}
+					m.queueIndex = 0
+				} else {
+					insertAt := m.queueIndex + 1
+					tail := append([]api.Song{}, m.queue[insertAt:]...)
+					m.queue = append(m.queue[:insertAt], append([]api.Song{selectedSong}, tail...)...)
+				}
+			}
 		case "a": // Add to queue
-			m.queue = append(m.queue, m.songs[m.cursorMain])
-
+			if m.focus == focusMain {
+				m.queue = append(m.queue, m.songs[m.cursorMain])
+			}
 		case "d": // Delete from queue
-			m.queue = append(m.queue[:m.queueIndex], m.queue[m.queueIndex+1:]...)
-
+			if m.focus == focusMain {
+				m.queue = append(m.queue[:m.queueIndex], m.queue[m.queueIndex+1:]...)
+			}
 		case "D": // Clear queue
-			m.queue = nil
-
+			if m.focus == focusMain {
+				m.queue = nil
+			}
 		case "ctrl+k": // Move up in queue
-			tempSong := m.queue[m.cursorMain]
+			if m.focus == focusMain {
+				tempSong := m.queue[m.cursorMain]
 
-			m.queue[m.cursorMain] = m.queue[m.cursorMain-1]
-			m.queue[m.cursorMain-1] = tempSong
-
+				m.queue[m.cursorMain] = m.queue[m.cursorMain-1]
+				m.queue[m.cursorMain-1] = tempSong
+			}
 		case "ctrl+j": // Move down in queue
-			tempSong := m.queue[m.cursorMain]
+			if m.focus == focusMain {
+				tempSong := m.queue[m.cursorMain]
 
-			m.queue[m.cursorMain] = m.queue[m.cursorMain+1]
-			m.queue[m.cursorMain+1] = tempSong
-
+				m.queue[m.cursorMain] = m.queue[m.cursorMain+1]
+				m.queue[m.cursorMain+1] = tempSong
+			}
 		case ",": // -10sec
-			player.Back10Seconds()
-
+			if m.focus != focusSearch {
+				player.Back10Seconds()
+			}
 		case ";": // +10sec
-			player.Forward10Seconds()
+			if m.focus != focusSearch {
+				player.Forward10Seconds()
+			}
 		}
 
 	case songsResultMsg:
