@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 type SubsonicResponse struct {
@@ -217,4 +218,16 @@ func subsonicStream(id string) string {
 	fullUrl := baseUrl + "?" + v.Encode()
 
 	return fullUrl
+}
+
+func subsonicScrobble(id string) {
+	time := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+
+	params := map[string]string{
+		"id":         id,
+		"time":       time,
+		"submission": "0",
+	}
+
+	subsonicGET("/scrobble", params)
 }

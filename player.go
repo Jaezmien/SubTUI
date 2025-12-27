@@ -55,6 +55,8 @@ func playSong(songID string) error {
 		return err
 	}
 
+	subsonicScrobble(songID)
+
 	mpvClient.SetProperty("pause", false)
 
 	return nil
