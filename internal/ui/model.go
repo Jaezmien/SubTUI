@@ -35,7 +35,7 @@ const (
 
 var (
 	// Colors
-	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
+	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#6b6b6bff"}
 	highlight = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
 

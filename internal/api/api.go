@@ -127,7 +127,7 @@ func SubsonicPing() error {
 func SubsonicSearchArtist(query string, page int) ([]Artist, error) {
 	params := map[string]string{
 		"query":        query,
-		"artistCount":  "20",
+		"artistCount":  "150",
 		"artistOffset": strconv.Itoa(page * 20),
 		"albumCount":   "0",
 		"albumOffset":  "0",
@@ -148,7 +148,7 @@ func SubsonicSearchAlbum(query string, page int) ([]Album, error) {
 		"query":        query,
 		"artistCount":  "0",
 		"artistOffset": "0",
-		"albumCount":   "20",
+		"albumCount":   "150",
 		"albumOffset":  strconv.Itoa(page * 20),
 		"songCount":    "0",
 		"songOffset":   "0",
@@ -169,7 +169,7 @@ func SubsonicSearchSong(query string, page int) ([]Song, error) {
 		"artistOffset": "0",
 		"albumCount":   "0",
 		"albumOffset":  "0",
-		"songCount":    "20",
+		"songCount":    "150",
 		"songOffset":   strconv.Itoa(page * 20),
 	}
 

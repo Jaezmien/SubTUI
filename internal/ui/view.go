@@ -14,9 +14,17 @@ func (m model) View() string {
 	}
 
 	// SIZING
-	searchHeight := int(float64(m.height) * 0.035)
-	mainHeight := int(float64(m.height) * 0.75)
-	footerHeight := int(float64(m.height) * 0.104)
+	headerHeight := 1
+
+	footerHeight := int(float64(m.height) * 0.10)
+	if footerHeight < 5 {
+		footerHeight = 5
+	}
+
+	mainHeight := m.height - headerHeight - footerHeight - (3 * 2) // 3 sections with each 2 borders (top and bottom)
+	if mainHeight < 0 {
+		mainHeight = 0
+	}
 
 	sidebarWidth := int(float64(m.width) * 0.25)
 	mainWidth := m.width - sidebarWidth - 4
@@ -29,7 +37,7 @@ func (m model) View() string {
 
 	topView := headerBorder.
 		Width(m.width - 2).
-		Height(searchHeight).
+		Height(headerHeight).
 		Render(headerContent(m))
 
 	// SIDEBAR
