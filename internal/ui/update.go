@@ -369,7 +369,7 @@ func mediaAddSongToQueue(m model) model {
 
 func mediaDeleteSongFromQueue(m model) model {
 	if m.focus == focusMain && m.viewMode == viewQueue && len(m.queue) > 0 {
-		m.queue = append(m.queue[:m.queueIndex], m.queue[m.queueIndex+1:]...)
+		m.queue = append(m.queue[:m.cursorMain], m.queue[m.cursorMain+1:]...)
 	}
 
 	if m.cursorMain >= len(m.queue) && m.cursorMain > 0 {
