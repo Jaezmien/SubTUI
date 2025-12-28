@@ -338,8 +338,7 @@ func enter(m model) (tea.Model, tea.Cmd) {
 	} else if m.focus == focusSidebar {
 		m.loading = true
 		m.focus = focusMain
-		m.viewMode = viewList
-		m.filterMode = filterSongs
+		m.displayMode = displaySongs
 		return m, getPlaylistSongs((m.playlists[m.cursorSide]).ID)
 	}
 
