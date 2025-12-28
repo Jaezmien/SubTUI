@@ -130,6 +130,8 @@ type starredResultMsg struct {
 	result *api.SearchResult3
 }
 
+type viewLikedSongsMsg *api.SearchResult3
+
 type errMsg struct {
 	err error
 }

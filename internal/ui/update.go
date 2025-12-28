@@ -41,6 +41,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q":
 			return quit(m, msg)
 
+		case "/":
+			return focusSearchBar(m), nil
+
 		case "tab":
 			m = cycleFocus(m, true)
 
@@ -104,8 +107,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "L":
 			m = mediaToggleLoop(m)
 
-		case "F":
+		case "f":
 			return mediaToggleFavorite(m, msg)
+
+		case "F":
+			return mediaShowFavorites(m)
 		}
 
 	case playlistResultMsg:
@@ -215,6 +221,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.starredMap[r.ID] = true
 		}
 
+	case viewLikedSongsMsg:
+		for _, s := range msg.Songs {
+			m.starredMap[s.ID] = true
+		}
+		for _, a := range msg.Albums {
+			m.starredMap[a.ID] = true
+		}
+
+		m.songs = msg.Songs
+
+		return m, nil
+
 	}
 
 	// Update inputs
@@ -237,6 +255,12 @@ func quit(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	} else {
 		return typeInput(m, msg)
 	}
+}
+
+func focusSearchBar(m model) model {
+	m.focus = focusSearch
+	m.textInput.Focus()
+	return m
 }
 
 // Cycles Focus: Search -> Sidebar -> Main -> Song -> Search
@@ -582,6 +606,14 @@ func mediaToggleFavorite(m model, msg tea.Msg) (model, tea.Cmd) {
 	}
 
 	return m, toggleStarCmd(id, isStarred)
+}
+
+func mediaShowFavorites(m model) (model, tea.Cmd) {
+	m.songs = nil
+	m.viewMode = viewList
+	m.focus = focusMain
+
+	return m, openLikedSongsCmd()
 }
 
 func (m *model) updateLoginInputs(msg tea.Msg) tea.Cmd {

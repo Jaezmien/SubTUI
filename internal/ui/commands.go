@@ -96,6 +96,17 @@ func getStarredCmd() tea.Cmd {
 	}
 }
 
+func openLikedSongsCmd() tea.Cmd {
+	return func() tea.Msg {
+		result, err := api.SubsonicGetStarred()
+		if err != nil {
+			return errMsg{err}
+		}
+
+		return viewLikedSongsMsg(result)
+	}
+}
+
 func toggleStarCmd(id string, isCurrentlyStarred bool) tea.Cmd {
 	return func() tea.Msg {
 		if isCurrentlyStarred {
