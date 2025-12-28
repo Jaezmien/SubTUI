@@ -131,6 +131,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if currentSong.ID != m.lastPlayedSongID {
 				m.lastPlayedSongID = currentSong.ID
 
+				m.scrobbled = false
+
 				go func() {
 					artBytes, err := api.SubsonicCoverArt(currentSong.ID)
 
