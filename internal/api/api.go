@@ -101,7 +101,7 @@ func subsonicGET(endpoint string, params map[string]string) (*SubsonicResponse, 
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var result SubsonicResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -236,7 +236,7 @@ func SubsonicStar(id string) {
 		"id": id,
 	}
 
-	subsonicGET("/star", params)
+	_, _ = subsonicGET("/star", params)
 }
 
 func SubsonicUnstar(id string) {
@@ -244,7 +244,7 @@ func SubsonicUnstar(id string) {
 		"id": id,
 	}
 
-	subsonicGET("/unstar", params)
+	_, _ = subsonicGET("/unstar", params)
 }
 
 func SubsonicGetStarred() (*SearchResult3, error) {
@@ -291,7 +291,7 @@ func SubsonicScrobble(id string, submission bool) {
 		"submission": strconv.FormatBool(submission),
 	}
 
-	subsonicGET("/scrobble", params)
+	_, _ = subsonicGET("/scrobble", params)
 }
 
 func SubsonicCoverArt(id string) ([]byte, error) {
@@ -317,7 +317,7 @@ func SubsonicCoverArt(id string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {

@@ -473,9 +473,12 @@ func footerContent(m model) string {
 	bottowRowArtistAlbum := lipgloss.NewStyle().Foreground(subtle).Render("  " + LimitString(artist, m.width-4))
 
 	loopText := ""
-	if m.loopMode == 1 {
+	switch m.loopMode {
+	case LoopNone:
+		loopText = ""
+	case LoopAll:
 		loopText = "Loop all"
-	} else if m.loopMode == 2 {
+	case LoopOne:
 		loopText = "Loop one"
 	}
 

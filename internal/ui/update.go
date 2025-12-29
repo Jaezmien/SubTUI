@@ -140,9 +140,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					description := fmt.Sprintf("Playing %s - %s", currentSong.Title, currentSong.Artist)
 
 					if err != nil {
-						beeep.Notify(title, description, "")
+						_ = beeep.Notify(title, description, "")
 					} else {
-						beeep.Notify(title, description, artBytes)
+						_ = beeep.Notify(title, description, artBytes)
 					}
 				}()
 			}
@@ -281,7 +281,8 @@ func cycleFocus(m model, forward bool) model {
 }
 
 func enter(m model) (tea.Model, tea.Cmd) {
-	if m.focus == focusSearch {
+	switch m.focus {
+	case focusSearch:
 		query := m.textInput.Value()
 		if query != "" {
 			m.loading = true
@@ -300,7 +301,7 @@ func enter(m model) (tea.Model, tea.Cmd) {
 
 			return m, searchCmd(query, m.filterMode)
 		}
-	} else if m.focus == focusMain {
+	case focusMain:
 		if m.viewMode == viewList {
 			switch m.displayMode {
 			// Play song
@@ -331,14 +332,13 @@ func enter(m model) (tea.Model, tea.Cmd) {
 					return m, getArtistAlbums(selectedArtist.ID)
 				}
 			}
-
 		} else {
 			// Queue View: Jump to selected song
 			if len(m.queue) > 0 {
 				return m, m.playQueueIndex(m.cursorMain)
 			}
 		}
-	} else if m.focus == focusSidebar {
+	case focusSidebar:
 		m.loading = true
 		m.focus = focusMain
 		m.displayMode = displaySongs
@@ -618,9 +618,10 @@ func mediaToggleFavorite(m model, msg tea.Msg) (model, tea.Cmd) {
 	case filterSongs:
 
 		var targetList []api.Song
-		if m.viewMode == viewList {
+		switch m.viewMode {
+		case viewList:
 			targetList = m.songs
-		} else if m.viewMode == viewQueue {
+		case viewQueue:
 			targetList = m.queue
 		}
 
@@ -694,7 +695,7 @@ func login(m model, msg tea.Msg) (model, tea.Cmd) {
 					return m, nil
 				}
 
-				player.InitPlayer()
+				_ = player.InitPlayer()
 				m.viewMode = viewList
 				m.focus = focusMain
 

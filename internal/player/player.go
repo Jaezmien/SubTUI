@@ -28,7 +28,7 @@ type PlayerStatus struct {
 func InitPlayer() error {
 	socketPath := "/tmp/subtui_mpv_socket"
 
-	exec.Command("pkill", "-f", socketPath).Run()
+	_ = exec.Command("pkill", "-f", socketPath).Run()
 	time.Sleep(200 * time.Millisecond)
 
 	args := []string{
@@ -60,7 +60,7 @@ func InitPlayer() error {
 
 func ShutdownPlayer() {
 	if mpvCmd != nil {
-		mpvCmd.Process.Kill()
+		_ = mpvCmd.Process.Kill()
 	}
 }
 
@@ -76,7 +76,7 @@ func PlaySong(songID string) error {
 
 	api.SubsonicScrobble(songID, false)
 
-	mpvClient.SetProperty("pause", false)
+	_ = mpvClient.SetProperty("pause", false)
 
 	return nil
 }
@@ -87,7 +87,7 @@ func TogglePause() {
 	}
 
 	status := mpvClient.IsPause()
-	mpvClient.SetProperty("pause", !status)
+	_ = mpvClient.SetProperty("pause", !status)
 }
 
 func ToggleLoop() {
@@ -96,7 +96,7 @@ func ToggleLoop() {
 	}
 
 	status := mpvClient.IsPlayLoop()
-	mpvClient.SetProperty("loop", !status)
+	_ = mpvClient.SetProperty("loop", !status)
 }
 
 func ToggleShuffle() {
@@ -105,15 +105,15 @@ func ToggleShuffle() {
 	}
 
 	status := mpvClient.IsShuffle()
-	mpvClient.SetProperty("shuffle", !status)
+	_ = mpvClient.SetProperty("shuffle", !status)
 }
 
 func Back10Seconds() {
-	mpvClient.Seek(-10)
+	_ = mpvClient.Seek(-10)
 }
 
 func Forward10Seconds() {
-	mpvClient.Seek(+10)
+	_ = mpvClient.Seek(+10)
 }
 
 func GetPlayerStatus() PlayerStatus {

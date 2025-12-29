@@ -28,7 +28,7 @@ func LoadConfig() error {
 	if err != nil {
 		return fmt.Errorf("could not open config file: %v", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	decoder := yaml.NewDecoder(file)
 	if err := decoder.Decode(&AppConfig); err != nil {
@@ -54,7 +54,7 @@ func SaveConfig() error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	encoder := yaml.NewEncoder(file)
 	encoder.SetIndent(2)

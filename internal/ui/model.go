@@ -100,7 +100,6 @@ type model struct {
 	// App State
 	err              error
 	loading          bool
-	playlistAmount   int
 	lastPlayedSongID string
 	scrobbled        bool
 
