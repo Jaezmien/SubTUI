@@ -16,13 +16,19 @@ type Config struct {
 
 var AppConfig Config
 
+func getConfigPath() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(configDir, "subtui", "config.yaml"), nil
+}
+
 func LoadConfig() error {
-	home, err := os.UserHomeDir()
+	configPath, err := getConfigPath()
 	if err != nil {
 		return err
 	}
-
-	configPath := filepath.Join(home, ".config", "subtui", "config.yaml")
 
 	file, err := os.Open(configPath)
 	if err != nil {
@@ -39,12 +45,10 @@ func LoadConfig() error {
 }
 
 func SaveConfig() error {
-	home, err := os.UserHomeDir()
+	configPath, err := getConfigPath()
 	if err != nil {
 		return err
 	}
-
-	configPath := filepath.Join(home, ".config", "subtui", "config.yaml")
 
 	if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
 		return err
