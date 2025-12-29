@@ -2,8 +2,8 @@ package player
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
-	"runtime"
 	"time"
 
 	"git.punjwani.pm/Mattia/SubTUI/internal/api"
@@ -26,32 +26,16 @@ type PlayerStatus struct {
 }
 
 func InitPlayer() error {
-	var socketPath string
-	var args []string
+	socketPath := "/tmp/subtui_mpv_socket"
 
-	if runtime.GOOS == "windows" {
-		socketPath = `\\.\pipe\subtui_mpv_socket`
+	exec.Command("pkill", "-f", socketPath).Run()
+	time.Sleep(200 * time.Millisecond)
 
-		exec.Command("taskkill", "/F", "/IM", "mpv.exe").Run()
-		time.Sleep(200 * time.Millisecond)
-
-		args = []string{
-			"--idle",
-			"--no-video",
-			"--input-ipc-server=" + socketPath,
-		}
-	} else {
-		socketPath = "/tmp/subtui_mpv_socket"
-
-		exec.Command("pkill", "-f", socketPath).Run()
-		time.Sleep(200 * time.Millisecond)
-
-		args = []string{
-			"--idle",
-			"--no-video",
-			"--ao=pulse",
-			"--input-ipc-server=" + socketPath,
-		}
+	args := []string{
+		"--idle",
+		"--no-video",
+		"--ao=pulse",
+		"--input-ipc-server=" + socketPath,
 	}
 
 	mpvCmd = exec.Command("mpv", args...)
@@ -59,8 +43,21 @@ func InitPlayer() error {
 		return fmt.Errorf("failed to start mpv: %v", err)
 	}
 
+	maxRetries := 10
+	for i := 0; i < maxRetries; i++ {
+		if _, err := os.Stat(socketPath); err == nil {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	ipcc := mpv.NewIPCClient(socketPath)
+	client := mpv.NewClient(ipcc)
+	mpvClient = client
+
 	return nil
 }
+
 func ShutdownPlayer() {
 	if mpvCmd != nil {
 		mpvCmd.Process.Kill()
