@@ -1,4 +1,4 @@
-module git.punjwani.pm/Mattia/SubTUI
+module github.com/MattiaPun/SubTUI
 
 go 1.25.5
 

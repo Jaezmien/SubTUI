@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"time"
 
-	"git.punjwani.pm/Mattia/SubTUI/internal/api"
+	"github.com/MattiaPun/SubTUI/internal/api"
 	"github.com/gdrens/mpv"
 )
 

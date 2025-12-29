@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"git.punjwani.pm/Mattia/SubTUI/internal/api"
+	"github.com/MattiaPun/SubTUI/internal/api"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/mattn/go-runewidth"
 )

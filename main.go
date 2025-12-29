@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"git.punjwani.pm/Mattia/SubTUI/internal/api"
-	"git.punjwani.pm/Mattia/SubTUI/internal/player"
-	"git.punjwani.pm/Mattia/SubTUI/internal/ui"
+	"github.com/MattiaPun/SubTUI/internal/api"
+	"github.com/MattiaPun/SubTUI/internal/player"
+	"github.com/MattiaPun/SubTUI/internal/ui"
 	tea "github.com/charmbracelet/bubbletea"
 )
 

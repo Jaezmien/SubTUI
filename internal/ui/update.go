@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"time"
 
-	"git.punjwani.pm/Mattia/SubTUI/internal/api"
-	"git.punjwani.pm/Mattia/SubTUI/internal/player"
+	"github.com/MattiaPun/SubTUI/internal/api"
+	"github.com/MattiaPun/SubTUI/internal/player"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gen2brain/beeep"
 )
