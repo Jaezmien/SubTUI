@@ -375,6 +375,10 @@ func goBack(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 		return typeInput(m, msg)
 	}
 
+	if m.viewMode == viewQueue {
+		return toggleQueue(m), nil
+	}
+
 	switch m.displayMode {
 	case displaySongs:
 		if m.albums != nil {
@@ -454,16 +458,20 @@ func cycleFilter(m model, forward bool) model {
 func toggleQueue(m model) model {
 	if m.focus != focusSearch {
 
-		if m.viewMode == viewList {
+		switch m.viewMode {
+		case viewList:
 			m.viewMode = viewQueue
+			m.displayModePrev = m.displayMode
+			m.displayMode = displaySongs
 			m.cursorMain = m.queueIndex
 			if m.cursorMain > 2 {
 				m.mainOffset = m.cursorMain - 2
 			} else {
 				m.mainOffset = 0
 			}
-		} else {
+		case viewQueue:
 			m.viewMode = viewList
+			m.displayMode = m.displayModePrev
 			m.cursorMain = 0
 			m.mainOffset = 0
 		}

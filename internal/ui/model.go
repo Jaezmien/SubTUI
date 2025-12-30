@@ -95,9 +95,10 @@ type model struct {
 	height int
 
 	// View Mode
-	viewMode    int
-	filterMode  int
-	displayMode int
+	viewMode        int
+	filterMode      int
+	displayMode     int
+	displayModePrev int
 
 	// App State
 	err              error
