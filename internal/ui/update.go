@@ -71,7 +71,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "Q":
 			m = toggleQueue(m)
 
-		case "p":
+		case "p", "P":
 			m = mediaTogglePlay(m)
 
 		case "n":

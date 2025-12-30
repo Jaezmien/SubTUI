@@ -57,6 +57,7 @@ go build .
 ### Media Controls
 | Key          	| Action                                   	|
 |--------------	|------------------------------------------	|
+| `p` / `P` 	| Toggle play/pause                      	|
 | `j` / `Down` 	| Move selection down                      	|
 | `k` / `Up`   	| Move selection up                        	|
 | `Enter`      	| Play selection / Open Album              	|
