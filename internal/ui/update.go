@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/MattiaPun/SubTUI/internal/api"
+	"github.com/MattiaPun/SubTUI/internal/integration"
 	"github.com/MattiaPun/SubTUI/internal/player"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gen2brain/beeep"
@@ -93,7 +95,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m = toggleQueue(m)
 
 		case "p", "P":
-			m = mediaTogglePlay(m)
+			m = mediaTogglePlay(m, msg)
 
 		case "n":
 			return mediaSongSkip(m, msg)
@@ -191,6 +193,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.playerStatus = player.PlayerStatus(msg)
 
+		if m.dbusInstance != nil && m.playerStatus.Title != "" && m.playerStatus.Title != "<nil>" && !strings.Contains(m.playerStatus.Title, "stream?c=SubTUI") {
+			m.dbusInstance.UpdateMetadata(integration.Metadata{
+				Title:    m.playerStatus.Title,
+				Artist:   m.playerStatus.Artist,
+				Album:    m.playerStatus.Album,
+				Duration: m.playerStatus.Duration,
+				ImageURL: api.SubsonicCoverArtUrl(m.queue[m.queueIndex].ID, 500),
+			})
+		}
+
 		if ((m.playerStatus.Duration > 0 && m.playerStatus.Current >= m.playerStatus.Duration-0.5) ||
 			(m.playerStatus.Title == "<nil>" && m.queueIndex != len(m.queue)-1)) &&
 			!m.playerStatus.Paused {
@@ -275,6 +287,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		return m, m.playQueueIndex(m.queueIndex, true)
+
+	case SetDBusMsg:
+		m.dbusInstance = msg.Instance
+		return m, nil
+
+	case integration.PlayPauseMsg:
+		m = mediaTogglePlay(m, msg)
+
+	case integration.NextSongMsg:
+		return mediaSongSkip(m, msg)
+
+	case integration.PreviousSongMsg:
+		return mediaSongPrev(m, msg)
 
 	}
 
@@ -599,16 +624,30 @@ func toggleQueue(m model) model {
 	return m
 }
 
-func mediaTogglePlay(m model) model {
-	if m.focus != focusSearch {
+func mediaTogglePlay(m model, msg tea.Msg) model {
+	_, isMpris := msg.(integration.PlayPauseMsg)
+	if m.focus != focusSearch || isMpris {
 		player.TogglePause()
+		m.playerStatus.Paused = !m.playerStatus.Paused
+
+		if m.dbusInstance != nil {
+			var newStatus string
+			if m.playerStatus.Paused {
+				newStatus = "Paused"
+			} else {
+				newStatus = "Playing"
+			}
+
+			m.dbusInstance.UpdateStatus(newStatus)
+		}
 	}
 
 	return m
 }
 
 func mediaSongSkip(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
-	if m.focus != focusSearch {
+	_, isMpris := msg.(integration.NextSongMsg)
+	if m.focus != focusSearch || isMpris {
 		return m, tea.Batch(
 			m.playNext(),
 		)
@@ -618,7 +657,8 @@ func mediaSongSkip(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func mediaSongPrev(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
-	if m.focus != focusSearch {
+	_, isMpris := msg.(integration.PreviousSongMsg)
+	if m.focus != focusSearch || isMpris {
 		return m, m.playPrev()
 	} else {
 		return typeInput(m, msg)
