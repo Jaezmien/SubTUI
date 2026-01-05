@@ -2,6 +2,7 @@ package ui
 
 import (
 	"github.com/MattiaPun/SubTUI/internal/api"
+	"github.com/MattiaPun/SubTUI/internal/integration"
 	"github.com/MattiaPun/SubTUI/internal/player"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -105,6 +106,7 @@ type model struct {
 	loading          bool
 	lastPlayedSongID string
 	scrobbled        bool
+	dbusInstance     *integration.Instance
 
 	// Queue System
 	queue      []api.Song
@@ -153,6 +155,10 @@ type errMsg struct {
 }
 
 type statusMsg player.PlayerStatus
+
+type SetDBusMsg struct {
+	Instance *integration.Instance
+}
 
 func InitialModel() model {
 	ti := textinput.New()

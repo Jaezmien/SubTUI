@@ -319,7 +319,7 @@ func SubsonicScrobble(id string, submission bool) {
 	_, _ = subsonicGET("/scrobble", params)
 }
 
-func SubsonicCoverArt(id string) ([]byte, error) {
+func SubsonicCoverArtUrl(id string, size int) string {
 	baseUrl := AppConfig.URL + "/rest/getCoverArt"
 
 	salt := generateSalt()
@@ -328,7 +328,7 @@ func SubsonicCoverArt(id string) ([]byte, error) {
 
 	v := url.Values{}
 	v.Set("id", id)
-	v.Set("size", "50")
+	v.Set("size", strconv.Itoa(size))
 	v.Set("u", AppConfig.Username)
 	v.Set("t", token)
 	v.Set("s", salt)
@@ -337,7 +337,11 @@ func SubsonicCoverArt(id string) ([]byte, error) {
 	v.Set("f", "json")
 
 	url := baseUrl + "?" + v.Encode()
+	return url
+}
 
+func SubsonicCoverArt(id string) ([]byte, error) {
+	url := SubsonicCoverArtUrl(id, 50)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
