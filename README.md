@@ -22,6 +22,10 @@ You can download pre-compiled binaries for Linux and macOS directly from the [Re
 
 You can install SubTUI directly from the AUR: `yay -S subtui-git`
 
+## GoLang Toolchain
+
+You can install SubTUI directly using GoLang: `go install github.com/MattiaPun/SubTUI@latest`
+
 ### From Source
 
 ```bash
