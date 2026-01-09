@@ -1,8 +1,8 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[BUG] short description"
-labels: ''
+title: "[BUG] Bug Name"
+labels: bug
 assignees: ''
 
 ---
@@ -25,7 +25,9 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
- - Version [e.g. 22]
+ - Version [e.g. v1.4.0]
+ - Subsonic Server [e.g. Navidrome, Airsonic]
+ - Version [e.g. v1.16.1]
 
 **Additional context**
 Add any other context about the problem here.
