@@ -14,9 +14,15 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+var (
+	version = "dev"
+	commit  = "none"
+)
+
 func main() {
 	// Debug flag
 	debug := flag.Bool("debug", false, "Enable debug logging to subtui.log")
+	showVersion := flag.Bool("v", false, "Print version and exit")
 	flag.Parse()
 
 	if *debug {
@@ -27,11 +33,17 @@ func main() {
 		}
 
 		log.Printf("=== SubTUI Started ===")
+		log.Printf("Version: %s | Commit: %s", version, commit)
 		log.Printf("Config Loaded: %v", api.AppConfig.URL)
 
 		defer f.Close()
 	} else {
 		log.SetOutput(io.Discard)
+	}
+
+	if *showVersion {
+		fmt.Printf("Version: %s | Commit: %s\n", version, commit)
+		os.Exit(0)
 	}
 
 	_ = api.LoadConfig()
