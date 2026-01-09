@@ -15,8 +15,10 @@ import (
 
 type SubsonicResponse struct {
 	Response struct {
-		Status            string        `json:"status"`
-		SearchResult      SearchResult3 `json:"searchResult3"`
+		Status            string         `json:"status"`
+		User              *SubsonicUser  `json:"user,omitempty"`
+		Error             *SubsonicError `json:"error,omitempty"`
+		SearchResult      SearchResult3  `json:"searchResult3"`
 		PlaylistContainer struct {
 			Playlists []Playlist `json:"playlist"`
 		} `json:"playlists"`
@@ -39,6 +41,16 @@ type SubsonicResponse struct {
 		} `json:"starred2"`
 		PlayQueue PlayQueue `json:"playQueue"`
 	} `json:"subsonic-response"`
+}
+
+type SubsonicUser struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type SubsonicError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 type PlayQueue struct {
@@ -114,6 +126,10 @@ func subsonicGET(endpoint string, params map[string]string) (*SubsonicResponse, 
 	}
 	defer func() { _ = resp.Body.Close() }()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server error (HTTP %d)", resp.StatusCode)
+	}
+
 	var result SubsonicResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, err
@@ -122,14 +138,21 @@ func subsonicGET(endpoint string, params map[string]string) (*SubsonicResponse, 
 	return &result, nil
 }
 
-func SubsonicPing() error {
-	data, err := subsonicGET("/ping", nil)
+func SubsonicLoginCheck() error {
+	data, err := subsonicGET("/getUser", nil)
 	if err != nil {
 		return fmt.Errorf("network error: %v", err)
 	}
 
-	if data.Response.Status != "ok" {
-		return fmt.Errorf("authentication failed: server returned status %s", data.Response.Status)
+	if data.Response.Status == "failed" && data.Response.Error != nil {
+		if data.Response.Error.Code == 40 {
+			return fmt.Errorf("wrong username or password")
+		}
+		return fmt.Errorf("api error: %s", data.Response.Error.Message)
+	}
+
+	if data.Response.User == nil && data.Response.Status == "ok" {
+		return nil
 	}
 
 	return nil

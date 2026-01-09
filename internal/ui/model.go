@@ -107,6 +107,7 @@ type model struct {
 	lastPlayedSongID string
 	scrobbled        bool
 	dbusInstance     *integration.Instance
+	loginErr         string
 
 	// Queue System
 	queue      []api.Song
@@ -122,6 +123,10 @@ type model struct {
 
 	// Input State
 	lastKey string
+}
+
+type loginResultMsg struct {
+	err error
 }
 
 type songsResultMsg struct {
@@ -189,13 +194,14 @@ func InitialModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	return tea.Batch(
-		textinput.Blink,
-		getPlaylists(),
-		getPlayQueue(),
-		syncPlayerCmd(),
-		getStarredCmd(),
-	)
+	if m.viewMode == viewList {
+		return tea.Batch(
+			textinput.Blink,
+			attemptLoginCmd(),
+		)
+	}
+
+	return textinput.Blink
 }
 
 func initialLoginInputs() []textinput.Model {

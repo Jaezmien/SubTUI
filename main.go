@@ -14,12 +14,7 @@ import (
 func main() {
 	_ = api.LoadConfig()
 
-	if api.AppConfig.Password != "" {
-		if err := player.InitPlayer(); err != nil {
-			fmt.Printf("Failed to start player: %v\n", err)
-		}
-
-	}
+	// Quiet MPV when TUI is killed
 	defer player.ShutdownPlayer()
 
 	p := tea.NewProgram(ui.InitialModel(), tea.WithAltScreen())

@@ -136,6 +136,14 @@ func LimitString(s string, limit int) string {
 }
 
 func loginView(m model) string {
+	errorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Bold(true)
+	errorDisplay := ""
+	if m.loginErr != "" {
+		errorDisplay = errorStyle.Render(m.loginErr)
+	} else {
+		errorDisplay = ""
+	}
+
 	content := lipgloss.JoinVertical(lipgloss.Center,
 		loginHeaderStyle.Render("Welcome to SubTUI"),
 		"", // Spacer
@@ -143,6 +151,7 @@ func loginView(m model) string {
 		m.loginInputs[1].View(),
 		m.loginInputs[2].View(),
 		"", // Spacer
+		errorDisplay,
 		loginHelpStyle.Render("[ Press Enter to Login ]"),
 	)
 

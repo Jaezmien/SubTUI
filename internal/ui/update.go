@@ -143,6 +143,46 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return mediaShowFavorites(m, msg)
 		}
 
+	case loginResultMsg:
+		m.loading = false
+		if msg.err != nil { // login failed
+			errMsg := msg.err.Error()
+
+			if strings.Contains(strings.ToLower(errMsg), "network") || strings.Contains(strings.ToLower(errMsg), "tls") || strings.Contains(strings.ToLower(errMsg), "remote") {
+				m.loginErr = "Host not found. Please check URL/Connection."
+			} else if strings.Contains(errMsg, "Wrong username") {
+				m.loginErr = "Invalid Credentials"
+			} else {
+				m.loginErr = errMsg
+			}
+
+			m.viewMode = viewLogin
+			m.loginInputs[0].SetValue(api.AppConfig.URL)
+			m.loginInputs[1].SetValue(api.AppConfig.Username)
+			m.loginInputs[2].SetValue(api.AppConfig.Password)
+
+			m.loginFocus = 0
+			m.loginInputs[0].Focus()
+			m.loginInputs[1].Blur()
+			m.loginInputs[2].Blur()
+		} else { // login success
+			if err := player.InitPlayer(); err != nil {
+				m.loginErr = fmt.Sprintf("Audio Engine Error: %v", err)
+				return m, nil
+			}
+
+			m.viewMode = viewList
+			m.focus = focusMain
+			m.loginErr = ""
+
+			return m, tea.Batch(
+				syncPlayerCmd(),
+				getPlaylists(),
+				getPlayQueue(),
+				getStarredCmd(),
+			)
+		}
+
 	case playlistResultMsg:
 		m.playlists = msg.playlists
 
@@ -885,23 +925,28 @@ func login(m model, msg tea.Msg) (model, tea.Cmd) {
 			// Cycle focus logic
 			if s == "enter" && m.loginFocus == len(m.loginInputs)-1 {
 				m.loading = true
+				m.loginErr = ""
 
-				api.AppConfig.URL = m.loginInputs[0].Value()
-				api.AppConfig.Username = m.loginInputs[1].Value()
-				api.AppConfig.Password = m.loginInputs[2].Value()
+				domain := m.loginInputs[0].Value()
+				username := m.loginInputs[1].Value()
+				password := m.loginInputs[2].Value()
 
-				if err := api.SaveConfig(); err != nil {
-					m.err = err
+				if domain == "" || username == "" || password == "" {
+					m.loginErr = "All fields are required"
 					return m, nil
 				}
 
-				_ = player.InitPlayer()
-				m.viewMode = viewList
-				m.focus = focusMain
+				if !strings.Contains(domain, "http") {
+					m.loginErr = "Please include the protocol at the start 'http(s)'"
+					return m, nil
+				}
+
+				api.AppConfig.URL = strings.TrimSuffix(domain, "/")
+				api.AppConfig.Username = username
+				api.AppConfig.Password = password
 
 				return m, tea.Batch(
-					checkLoginCmd(),
-					getPlaylists(),
+					attemptLoginCmd(),
 				)
 			}
 

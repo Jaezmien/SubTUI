@@ -8,6 +8,17 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+func attemptLoginCmd() tea.Cmd {
+	return func() tea.Msg {
+		if err := api.SaveConfig(); err != nil {
+			return loginResultMsg{err: err}
+		}
+
+		err := api.SubsonicLoginCheck()
+		return loginResultMsg{err: err}
+	}
+}
+
 func searchCmd(query string, mode int) tea.Cmd {
 	return func() tea.Msg {
 
@@ -124,16 +135,6 @@ func toggleStarCmd(id string, isCurrentlyStarred bool) tea.Cmd {
 		} else {
 			api.SubsonicStar(id)
 		}
-		return nil
-	}
-}
-
-func checkLoginCmd() tea.Cmd {
-	return func() tea.Msg {
-		if err := api.SubsonicPing(); err != nil {
-			return errMsg{err}
-		}
-
 		return nil
 	}
 }
