@@ -62,6 +62,11 @@ func main() {
 		go p.Send(ui.SetDBusMsg{Instance: instance})
 	}
 
+	discordIns := integration.InitDiscord()
+	if discordIns != nil {
+		go p.Send(ui.SetDiscordMsg{Instance: discordIns})
+	}
+
 	if _, err := p.Run(); err != nil {
 		fmt.Println("Error while running program:", err)
 		os.Exit(1)

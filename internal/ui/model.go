@@ -106,9 +106,12 @@ type model struct {
 	loading          bool
 	lastPlayedSongID string
 	scrobbled        bool
-	dbusInstance     *integration.Instance
 	loginErr         string
 	notify           bool
+
+	// Integrations
+	dbusInstance    *integration.Instance
+	discordInstance *integration.DiscordInstance
 
 	// Queue System
 	queue      []api.Song
@@ -177,6 +180,10 @@ type statusMsg player.PlayerStatus
 
 type SetDBusMsg struct {
 	Instance *integration.Instance
+}
+
+type SetDiscordMsg struct {
+	Instance *integration.DiscordInstance
 }
 
 func InitialModel() model {

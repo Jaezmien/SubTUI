@@ -3,6 +3,7 @@ module github.com/MattiaPun/SubTUI
 go 1.25.4
 
 require (
+	github.com/babycommando/rich-go v0.0.0-20250721232012-541cbf3cf142
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
@@ -46,4 +47,5 @@ require (
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
+	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
