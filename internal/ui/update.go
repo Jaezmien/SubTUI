@@ -185,6 +185,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "s":
 			m = toggleNotifications(m)
+
+		case "-":
+			m = lowerVolume(m)
+
+		case "=":
+			m = raiseVolume(m)
 		}
 
 	case loginResultMsg:
@@ -1074,6 +1080,22 @@ func mediaCreateShare(m model) tea.Cmd {
 func toggleNotifications(m model) model {
 	if m.focus != focusSearch {
 		m.notify = !m.notify
+	}
+
+	return m
+}
+
+func lowerVolume(m model) model {
+	if m.focus != focusSearch {
+		player.SetVolume(int(player.GetPlayerStatus().Volume) - 5)
+	}
+
+	return m
+}
+
+func raiseVolume(m model) model {
+	if m.focus != focusSearch {
+		player.SetVolume(int(player.GetPlayerStatus().Volume) + 5)
 	}
 
 	return m

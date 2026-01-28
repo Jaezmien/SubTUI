@@ -133,6 +133,10 @@ func Forward10Seconds() {
 	_ = mpvClient.Seek(+10)
 }
 
+func SetVolume(level int) {
+	_ = mpvClient.Volume(level)
+}
+
 func GetPlayerStatus() PlayerStatus {
 	if mpvClient == nil {
 		return PlayerStatus{}
